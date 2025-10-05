@@ -1,10 +1,12 @@
 from fastapi import FastAPI, Request
 import json
 import numpy as np
+from mangum import Mangum
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
 app = FastAPI()
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -12,9 +14,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # Load telemetry data
-with open("data.json") as f:
+data_path = os.path.join(os.path.dirname(__file__), "data.json")
+with open(data_path) as f:
     telemetry = json.load(f)
 
 @app.post("/")
@@ -27,9 +29,7 @@ async def check_latency(request: Request):
     for region in regions:
         region_data = telemetry.get(region, [])
         if not region_data:
-            result[region] = {
-                "error": "Region not found"
-            }
+            result[region] = {"error": "Region not found"}
             continue
 
         latencies = [r["latency_ms"] for r in region_data]
@@ -47,3 +47,6 @@ async def check_latency(request: Request):
         }
 
     return result
+
+# Adapter for Vercel serverless
+handler = Mangum(app)
