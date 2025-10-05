@@ -16,7 +16,7 @@ app.add_middleware(
 )
 
 # Load telemetry data
-data_path = os.path.join(os.path.dirname(__file__), "data.json")
+data_path = os.path.join(os.path.dirname(__file__), "../data.json")
 with open(data_path) as f:
     telemetry = json.load(f)
 
@@ -48,9 +48,3 @@ async def check_latency(request: Request):
         }
 
     return JSONResponse(content=result)
-
-# **Vercel serverless requires this function**
-def handler(request, context):
-    from mangum import Mangum
-    asgi_handler = Mangum(app)
-    return asgi_handler(request, context)
