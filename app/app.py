@@ -12,7 +12,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 # Load telemetry data
 with open("data.json") as f:
     telemetry = json.load(f)
@@ -47,3 +46,6 @@ async def check_latency(request: Request):
         }
 
     return result
+
+# ADD THIS FOR VERCEL
+handler = app
