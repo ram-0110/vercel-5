@@ -1,12 +1,13 @@
 from fastapi import FastAPI, Request
 import json
 import numpy as np
-from mangum import Mangum
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import os
 
 app = FastAPI()
 
+# CORS
+from fastapi.middleware.cors import CORSMiddleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -46,7 +47,10 @@ async def check_latency(request: Request):
             "under_threshold": avg_latency < threshold
         }
 
-    return result
+    return JSONResponse(content=result)
 
-# Adapter for Vercel serverless
-handler = Mangum(app)
+# **Vercel serverless requires this function**
+def handler(request, context):
+    from mangum import Mangum
+    asgi_handler = Mangum(app)
+    return asgi_handler(request, context)
