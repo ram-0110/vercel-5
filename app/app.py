@@ -5,12 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import os
 
 app = FastAPI()
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_methods=["POST"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["POST"],
+    allow_headers=["*"],
+)
+
 
 # Load telemetry data
 with open("data.json") as f:
