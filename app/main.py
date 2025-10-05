@@ -1,28 +1,32 @@
 from fastapi import FastAPI, Request
-import json
-import numpy as np
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+import numpy as np
+import json
 import os
 
 app = FastAPI()
 
-# CORS
-from fastapi.middleware.cors import CORSMiddleware
+# Allow all origins for testing
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["POST"],
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Load telemetry data
-data_path = os.path.join(os.path.dirname(__file__), "data.json")
+data_path = os.path.join(os.path.dirname(__file__), "../data.json")
 with open(data_path) as f:
     telemetry = json.load(f)
 
 @app.post("/")
 async def check_latency(request: Request):
-    data = await request.json()
+    try:
+        data = await request.json()
+    except Exception:
+        return JSONResponse(content={"error": "Invalid JSON"}, status_code=400)
+
     regions = data.get("regions", [])
     threshold = data.get("threshold_ms", 0)
 
